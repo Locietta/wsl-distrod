@@ -326,17 +326,17 @@ fn test_wslg_socket_is_available() {
     // Wait for a while until Systemd initializes /tmp
     std::thread::sleep(Duration::from_secs(15));
 
-    let mut test = DISTROD_SETUP.new_command();
-    test.args(&["exec", "--", "test", "-e", "/run/tmpfiles.d/x11.conf"]);
-    let child = test.status().unwrap();
-    assert!(child.success());
-
-    let mut ls = DISTROD_SETUP.new_command();
-    ls.args(&["exec", "--", "ls", "-ld", "/tmp/.X11-unix"]);
-    let output = ls.output().unwrap();
-    let output = String::from_utf8_lossy(&output.stdout);
-    eprintln!("output of `ls -ld /tmp/.X11-unix`: {}", output);
-    assert!(output.ends_with("-> /mnt/wslg/.X11-unix\n"));
+    // mount x11.conf to symlink
+    let mut test_old = DISTROD_SETUP.new_command();
+    test_old.args(&["exec", "--", "test", "-e", "/run/tmpfiles.d/x11.conf"]);
+    let result_old = test_old.status().unwrap();
+    
+    // mount systemd-tmpfiles-setup.service.d to bind-mount
+    let mut test_new = DISTROD_SETUP.new_command();
+    test_new.args(&["exec", "--", "test", "-e", "/run/systemd/system/systemd-tmpfiles-setup.service.d/exclude_wslg_sockets.conf"]);
+    let result_new = test_new.status().unwrap();
+    
+    assert!(result_old.success() || result_new.success());
 }
 
 #[test]
