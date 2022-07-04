@@ -148,10 +148,10 @@ def copy_apt_package_copyright_for_redistribution(file_path: Path, work_dir: Pat
         os.path.basename(system_license_path))
     convenient_alias_path = dst_license_dir.joinpath(
         os.path.basename(file_path) + ".LICENSE")
-    if not dst_license_path.exists():
-        shutil.copy(system_license_path, dst_license_path)
-    if not convenient_alias_path.exists():
-        os.symlink(os.path.basename(dst_license_path), convenient_alias_path)
+    # if not dst_license_path.exists():
+    #     shutil.copy(system_license_path, dst_license_path)
+    # if not convenient_alias_path.exists():
+    #     os.symlink(os.path.basename(dst_license_path), convenient_alias_path)
 
 
 APT_FILE_PATTERN = re.compile("^([^:]+): ")
